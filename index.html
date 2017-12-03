@@ -135,6 +135,91 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Typescript笔记" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/12/03/Typescript笔记/">Typescript笔记</a>
+    </h1>
+  
+
+        
+        <a href="/2017/12/03/Typescript笔记/" class="archive-article-date">
+  	<time datetime="2017-12-03T10:28:29.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-12-03</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="undefined和void的区别"><a href="#undefined和void的区别" class="headerlink" title="undefined和void的区别"></a>undefined和void的区别</h2><blockquote>
+<p>void无任何类型，当一个函数无返回值的时候，返回值的类型就是void(和C里面声明一个无返回值的函数类似)，当声明一个void类型的变量的时候，它可以被赋值为null和undefined. 在 strictNullChecks  = true 的时候行为不一样</p>
+<p>undefined在TS里面也是一种类型，undefined在作为函数返回值类型的时候IDE会报错，提示函数在无返回值的情况下，类型只能为void和any</p>
+</blockquote>
+<h2 id="typeof的作用"><a href="#typeof的作用" class="headerlink" title="typeof的作用"></a>typeof的作用</h2><blockquote>
+<p>获取变量类型<br><figure class="highlight typescript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">let</span> b: <span class="built_in">number</span> = <span class="number">1</span>;</div><div class="line"><span class="keyword">let</span> a: <span class="keyword">typeof</span> b = <span class="number">2</span>;</div></pre></td></tr></table></figure></p>
+<p>用作类型保护，当表达式为typeof v === “typename”和 typeof v !== “typename”且”typename”为 “number”， “string”， “boolean”或”symbol”的时候，这会被识别为类型保护</p>
+</blockquote>
+<h2 id="如何声明-getProperty，以便能检查出第八行将会出现的运行错误。"><a href="#如何声明-getProperty，以便能检查出第八行将会出现的运行错误。" class="headerlink" title="如何声明 getProperty，以便能检查出第八行将会出现的运行错误。"></a>如何声明 getProperty，以便能检查出第八行将会出现的运行错误。</h2><figure class="highlight typescript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">getProperty</span>(<span class="params">obj, key</span>) </span>&#123;</div><div class="line">    <span class="keyword">return</span> obj[key].toString();</div><div class="line">&#125;</div><div class="line"> </div><div class="line"><span class="keyword">let</span> x = &#123; a: <span class="number">1</span>, b: <span class="number">2</span>, c: <span class="number">3</span>, d: <span class="number">4</span> &#125;;</div><div class="line"> </div><div class="line">getProperty(x, <span class="string">"a"</span>);</div><div class="line">getProperty(x, <span class="string">"m"</span>);</div></pre></td></tr></table></figure>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">getProperty</span>&lt;<span class="title">T</span> <span class="title">extends</span> </span>&#123;[k: <span class="built_in">string</span>]: <span class="built_in">number</span>&#125;, K <span class="keyword">extends</span> keyof T&gt;(obj: T, key: K) &#123;</div><div class="line">    <span class="keyword">return</span> obj[key].toString();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="Typescript中如何实现Mixin"><a href="#Typescript中如何实现Mixin" class="headerlink" title="Typescript中如何实现Mixin"></a>Typescript中如何实现Mixin</h2><blockquote>
+<p>方式1：<br><figure class="highlight typescript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">applyMixins</span>(<span class="params">derivedCtor: <span class="built_in">any</span>, baseCtors: <span class="built_in">any</span>[]</span>) </span>&#123;</div><div class="line">    baseCtors.forEach(<span class="function"><span class="params">baseCtor</span> =&gt;</span> &#123;</div><div class="line">        <span class="built_in">Object</span>.getOwnPropertyNames(baseCtor.prototype).forEach(<span class="function"><span class="params">name</span> =&gt;</span> &#123;</div><div class="line">            derivedCtor.prototype[name] = baseCtor.prototype[name];</div><div class="line">        &#125;);</div><div class="line">    &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>方式2：<br><figure class="highlight typescript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//混合构造函数类型</span></div><div class="line"><span class="keyword">type</span> Constructor&lt;T&gt; = <span class="keyword">new</span> (...args: <span class="built_in">any</span>[]) =&gt; T;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">Tagged</span>&lt;<span class="title">T</span> <span class="title">extends</span> <span class="title">Constructor</span>&lt;</span>&#123;&#125;&gt;&gt;(Base: T) &#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">class</span> <span class="keyword">extends</span> Base &#123;</div><div class="line">        _tag: <span class="built_in">string</span>;</div><div class="line">        <span class="keyword">constructor</span>(<span class="params">...args: <span class="built_in">any</span>[]</span>) &#123;</div><div class="line">            <span class="keyword">super</span>(...args);</div><div class="line">            <span class="keyword">this</span>._tag = <span class="string">""</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+</blockquote>
+<h2 id="Typescript中import-xx-require-‘xxx’-和-import-‘xxx’-和-import-xx-from-‘xxx’的区别"><a href="#Typescript中import-xx-require-‘xxx’-和-import-‘xxx’-和-import-xx-from-‘xxx’的区别" class="headerlink" title="Typescript中import xx = require(‘xxx’) 和 import ‘xxx’ 和 import xx from ‘xxx’的区别"></a>Typescript中import xx = require(‘xxx’) 和 import ‘xxx’ 和 import xx from ‘xxx’的区别</h2><blockquote>
+<p><code>import xx from &#39;xxx&#39;</code> 是ES6的模块系统，用来导入<code>export default</code> 或者 <code>export</code> 导出的函数或者对象</p>
+<p><code>import xx = require(&#39;xxx&#39;)</code> 是用来兼容CommonJs写法的模块，通常是用<code>module.exports = xxx</code> 和 <code>exports.xx = xx</code>导出的模块</p>
+<p><code>import &#39;xxx&#39;</code> 是动态导入表达式，动态的import表达式是一个新特性，它属于ECMAScript的一部分，允许用户在程序的任何位置异步地请求某个模块。</p>
+</blockquote>
+<h2 id="Typescript怎么引入图片不报错，列如-import-‘-p-png’"><a href="#Typescript怎么引入图片不报错，列如-import-‘-p-png’" class="headerlink" title="Typescript怎么引入图片不报错，列如 import ‘./p.png’"></a>Typescript怎么引入图片不报错，列如 import ‘./p.png’</h2><figure class="highlight typescript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">declare</span> <span class="keyword">module</span> '*.png' &#123;</div><div class="line">    <span class="keyword">const</span> content: <span class="built_in">string</span>;</div><div class="line">    <span class="keyword">export</span> <span class="keyword">default</span> content;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="Typescript中既能当作类型，又能当作值的参数有哪些？"><a href="#Typescript中既能当作类型，又能当作值的参数有哪些？" class="headerlink" title="Typescript中既能当作类型，又能当作值的参数有哪些？"></a>Typescript中既能当作类型，又能当作值的参数有哪些？</h2><blockquote>
+<p>class, undefined, null, enum</p>
+</blockquote>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/12/03/Typescript笔记/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-面试记闻" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
